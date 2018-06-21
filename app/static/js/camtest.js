@@ -1,4 +1,4 @@
-var target_url = "https://127.0.0.1:8080/test"
+var target_url = "https://canadiantired-207914.appspot.com/test"
 var pic;
 
 $(document).ready(function() {

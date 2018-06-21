@@ -36,8 +36,9 @@ def test():
 
     with open('imageToSave.jpg', 'wb') as fh:
         # Get only revelant data, deleting "data:image/png;base64,"
-        data = lst[1].replace("'","")
-        fh.write(data.decode('base64'))
+        if len(lst) > 1:
+            data = lst[1].replace("'","")
+            fh.write(data.decode('base64'))
 
     response = jsonify({'status': 'success'})
     response.headers.add('Access-Control-Allow-Origin', '*')
