@@ -21,7 +21,7 @@ def hello():
 @cross_origin()
 def test():
     #print request.data
-    print "aaaaaaa"
+    print('aaaaaaaaaa')
     lst = str(request.form).split(',')
     lst[1] = lst[1].replace(',','')
     t2 = open("Output3.txt", "w")
