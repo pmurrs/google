@@ -36,7 +36,7 @@ def test():
 @app.route('/image')
 def _image(input_file, output_file):
    
-   with open(image_filename, 'rb') as image_file:
+    with open(image_filename, 'rb') as image_file:
             content_json_obj = {
                 'content': base64.b64encode(image_file.read()).decode('UTF-8')
             }
