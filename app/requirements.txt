@@ -1,3 +1,6 @@
 Flask==0.12.2
+
 gunicorn==19.7.1
-Flask-CORS==3.0.6Requests==2.19.1
+
+Flask-CORS==3.0.6
+Requests==2.19.1
