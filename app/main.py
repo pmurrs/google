@@ -5,13 +5,14 @@ from flask import Flask, render_template
 from base64 import b64decode
 
 
+#app = Flask(__name__, template_folder='templates')
 app = Flask(__name__)
 CORS(app)
 
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    return render_template('/template/index.html')
+    return render_template('index.html')
 
 @app.route('/test')
 def test():
