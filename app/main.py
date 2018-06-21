@@ -1,7 +1,7 @@
 # [START app]
 import logging
 from flask_cors import CORS
-from flask import Flask
+from flask import Flask, render_template
 from base64 import b64decode
 
 
