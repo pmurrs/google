@@ -23,13 +23,16 @@ def test():
     #print request.data
     print('aaaaaaaaaa')
     lst = str(request.form).split(',')
-    lst[1] = lst[1].replace(',','')
-    t2 = open("Output3.txt", "w")
-    text_file = open("Output4.txt", "w")
-    text_file.write(lst[1].replace("'","").strip())
-    t2.write(str(request.form))
-    text_file.close()
-    t2.close()
+    if len(lst) > 1:
+        lst[1] = lst[1].replace(',','')
+        t2 = open("Output3.txt", "w")
+        text_file = open("Output4.txt", "w")
+        text_file.write(lst[1].replace("'","").strip())
+        t2.write(str(request.form))
+        text_file.close()
+        t2.close()
+    else:
+        print str(request.form)
 
     with open('imageToSave.jpg', 'wb') as fh:
         # Get only revelant data, deleting "data:image/png;base64,"
