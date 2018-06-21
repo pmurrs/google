@@ -1,22 +1,24 @@
 # [START app]
 import logging
 from flask_cors import CORS
-from flask import Flask, render_template
+from flask import Flask, redirect, url_for, request, render_template, jsonify
 from base64 import b64decode
+import requests
 
 
 #app = Flask(__name__, template_folder='templates')
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/')
+@app.route('/',methods = ['POST', 'GET'])
 def hello():
     """Return a friendly HTTP greeting."""
     return render_template('index.html')
 
-@app.route('/test')
+@app.route('/test',methods = ['POST', 'GET'])
 def test():
     #print request.data
+    print "aaaaaaa"
     lst = str(request.form).split(',')
     lst[1] = lst[1].replace(',','')
     t2 = open("Output3.txt", "w")

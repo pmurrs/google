@@ -1,5 +1,12 @@
-var target_url = "http://127.0.0.1:5000/test"
+var target_url = "http://127.0.0.1:8080/test"
 var pic;
+
+$(document).ready(function() {
+
+       $('.button').click(take_snapshot);
+	   console.log('onready');
+
+   });
 
 Webcam.set({
     width: window.innerWidth,
@@ -16,6 +23,7 @@ Webcam.attach( '#my_camera' );
 
 function take_snapshot() {
     // take snapshot and get image data
+	console.log('fired');
     Webcam.snap( function(data_uri) {
         pic = data_uri;
         send_image(pic);
