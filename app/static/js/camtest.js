@@ -39,7 +39,7 @@ function send_image(img){
         url: target_url,
         data: encodeURIComponent(img),
         success: success_response,
-        dataType: "json"
+        dataType: "jsonp"
       });
 }
 
