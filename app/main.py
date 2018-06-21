@@ -1,6 +1,6 @@
 # [START app]
 import logging
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from flask import Flask, redirect, url_for, request, render_template, jsonify
 from base64 import b64decode
 import requests
@@ -9,13 +9,16 @@ import requests
 #app = Flask(__name__, template_folder='templates')
 app = Flask(__name__)
 CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/',methods = ['POST', 'GET'])
+@cross_origin()
 def hello():
     """Return a friendly HTTP greeting."""
     return render_template('index.html')
 
 @app.route('/test',methods = ['POST', 'GET'])
+@cross_origin()
 def test():
     #print request.data
     print "aaaaaaa"
@@ -33,7 +36,7 @@ def test():
         data = lst[1].replace("'","")
         fh.write(data.decode('base64'))
 
-    response = flask.jsonify({'status': 'success'})
+    response = jsonify({'status': 'success'})
     response.headers.add('Access-Control-Allow-Origin', '*')
     
     return response
