@@ -11,7 +11,7 @@ CORS(app)
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    return render_template('template/index.html')
+    return render_template('/template/index.html')
 
 @app.route('/test')
 def test():
