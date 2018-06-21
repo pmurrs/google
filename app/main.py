@@ -32,9 +32,11 @@ def test():
         # Get only revelant data, deleting "data:image/png;base64,"
         data = lst[1].replace("'","")
         fh.write(data.decode('base64'))
+
+    response = flask.jsonify({'status': 'success'})
+    response.headers.add('Access-Control-Allow-Origin', '*')
     
-    return jsonify(status='success',
-        do='blah')
+    return response
 
 @app.route('/image')
 def _image(input_file, output_file):
