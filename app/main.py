@@ -32,7 +32,7 @@ def test():
         text_file.close()
         t2.close()
     else:
-        print str(request.form)
+        print(str(request.form))
 
     with open('imageToSave.jpg', 'wb') as fh:
         # Get only revelant data, deleting "data:image/png;base64,"
