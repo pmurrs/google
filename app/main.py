@@ -140,12 +140,21 @@ def api_request(upfile):
         c = 'not found'
 
     if c != 'not found':
-        datastore_client = datastore.Client('canadiantired-207914')
+        # datastore_client = datastore.Client('canadiantired-207914')
 
-        query = datastore_client.query(kind='Product')
-        image_entities = list(query.fetch())
+        # query = datastore_client.query(kind='Product')
+        # query.add_filter('name','=','got')
+        # image_entities = list(query.fetch())
 
-    return str(image_entities)
+        products = [['abc','123.99','DEF'],['got','19.99','Game of Thrones']]
+
+        d = c.split(' ')
+
+        for each in products:
+            if d[0].lower() == each[0]:
+                c = each
+
+    return str(c)
 
 
 @app.errorhandler(500)
