@@ -14,9 +14,11 @@ Webcam.set({
     image_format: 'jpeg',
     jpeg_quality: 90,
     constraints: {
-        width: { exact: 640 },
-        height: { exact: 360 }
-    }
+        width: { exact: 1280 },
+        height: { exact: 720 }
+    },
+	dest_width: 100,
+	dest_height: 100
 });
 
 Webcam.attach( '#my_camera' );
