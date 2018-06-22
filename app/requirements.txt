@@ -2,4 +2,5 @@ Flask==0.12.2
 gunicorn==19.7.1
 Flask-CORS==3.0.6
 Requests==2.19.1
+google==2.0.1
 google-cloud==0.33.1
