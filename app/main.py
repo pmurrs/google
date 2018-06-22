@@ -140,7 +140,7 @@ def api_request(upfile):
         c = 'not found'
 
     if c != 'not found':
-        datastore_client = datastore.Client()
+        datastore_client = datastore.Client('canadiantired-207914')
 
         query = datastore_client.query(kind='Product')
         image_entities = list(query.fetch())
