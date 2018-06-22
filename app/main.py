@@ -286,7 +286,7 @@ def post_audio():
         elasticResponse = requests.get('http://104.198.254.220:9200/_search?q=bike')
         # a = json.loads(response.text)
  
-        print elasticResponse
+        print (elasticResponse)
         return elasticResponse.text
 
 if __name__ == '__main__':
