@@ -6,9 +6,10 @@ from base64 import b64decode
 from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
 from google.cloud import storage
-from flask_cors import CORS
-from pydub import AudioSegment
-from google.cloud import speech
+from google.cloud import datastore
+from google.cloud import vision
+import json
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -60,21 +61,23 @@ def test():
     
     return response
 
-@app.route('/image')
-def _image(input_file, output_file):
+#uploads file to bucket
+@app.route('/image/<img>')
+def _image(img):
 
     client = storage.Client()
     bucket = client.get_bucket('canadiantired')
-    blob = bucket.blob('donuts.png')
-    blob.upload_from_string('this is test content!')
+    blob = bucket.blob(img)
+    blob.upload_from_filename(img)
    
     # with open(image_filename, 'rb') as image_file:
     #         content_json_obj = {
     #             'content': base64.b64encode(image_file.read()).decode('UTF-8')
     #        }
 
-    return 'Uploaded'
+    return redirect("/req/" + img, code=302)
 
+#uploads file to server and redirects to method which uploads to bucket
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -91,7 +94,7 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect("/image", code=302)
+            return redirect("/image/" + filename, code=302)
     return '''
     <!doctype html>
     <title>Upload new File</title>
@@ -101,6 +104,55 @@ def upload_file():
          <input type=submit value=Upload>
     </form>
     '''
+
+@app.route('/req/<upfile>', methods=['GET', 'POST'])
+def api_request(upfile):
+
+    headers = {'Content-Type': 'application/json', }
+    params = (('key', 'AIzaSyAxgxicufBuHtEMsqScWdu4Uaivs0Laox4'),) #provide correct api key for our instance
+
+    data = {}
+    data['requests'] = {}
+    data['requests']['image'] = {}
+    data['requests']['image']['source'] = {}
+    data['requests']['image']['source']['gcsImageUri'] = 'gs://canadiantired/' + upfile
+    data['requests']['features'] = [{}]
+    data['requests']['features'][0]['type'] = 'TEXT_DETECTION'
+
+    print('before')
+    json_data = json.dumps(data)
+    print('after')
+
+    # data = open('request.json', 'rb').read() #json request file required
+    response = requests.post('https://vision.googleapis.com/v1/images:annotate', headers=headers, params=params, data=json_data)
+    a = json.loads(response.text)
+
+    b = a[u'responses'][0][u'textAnnotations']
+
+    c = ''
+
+    if b[0][u'description']:
+        c = b[0][u'description']
+        c = c.replace('\n',' ')
+    else:
+        c = 'not found'
+
+    if c != 'not found':
+        # datastore_client = datastore.Client('canadiantired-207914')
+
+        # query = datastore_client.query(kind='Product')
+        # query.add_filter('name','=','got')
+        # image_entities = list(query.fetch())
+
+        products = [['abc','123.99','DEF'],['got','19.99','Game of Thrones']]
+
+        d = c.split(' ')
+
+        for each in products:
+            if d[0].lower() == each[0]:
+                c = each
+
+    return str(c)
 
 
 @app.errorhandler(500)
