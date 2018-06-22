@@ -146,7 +146,7 @@ def api_request(upfile):
         # query.add_filter('name','=','got')
         # image_entities = list(query.fetch())
 
-        products = [['abc','123.99','DEF'],['got','19.99','Game of Thrones']]
+        products = [['abc','123.99','DEF'],['got','19.99','Game of Thrones'], ['020 8777 8888', '456.78', 'Smart Phone']]
 
         d = c.split(' ')
 
