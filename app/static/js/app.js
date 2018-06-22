@@ -57,7 +57,7 @@ function handleSuccess(stream) {
                 fd.append('data', blob);
                 $.ajax({
                     type: 'POST',
-                    url: 'http://127.0.0.1:5005/api/audio',
+                    url: 'http://127.0.0.1:8080/api/audio',
                     data: fd,
                     processData: false,
                     contentType: false
@@ -65,7 +65,14 @@ function handleSuccess(stream) {
                     console.log(JSON.parse(data).hits.hits);
                     var products = JSON.parse(data).hits.hits;
                     products.map(function(name, index){
-                        document.getElementById('productdescription').innerHTML += "<li id='" + index + "'>" + index + "</li>";
+                        var base64_string = name['_source']['base64_img'];
+                        var img = document.createElement("img");
+                        img.src = "data:image/png;base64," + base64_string;
+                        console.log(name['_source']);
+                        document.getElementById('productdescription').innerHTML += "<li id='" + index + "'>" + name['_source']['productid'] + "</li>";
+
+                        var preview = document.getElementById("productdescription");
+                        preview.appendChild(img);
                     })
                     
                     
