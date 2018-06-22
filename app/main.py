@@ -60,12 +60,12 @@ def test():
     
     return response
 
-@app.route('/image')
-def _image(input_file, output_file):
+@app.route('/image/<img>')
+def _image(img):
 
     client = storage.Client()
     bucket = client.get_bucket('canadiantired')
-    blob = bucket.blob('donuts.png')
+    blob = bucket.blob(img)
     blob.upload_from_string('this is test content!')
    
     # with open(image_filename, 'rb') as image_file:
