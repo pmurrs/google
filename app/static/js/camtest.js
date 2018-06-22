@@ -14,8 +14,8 @@ Webcam.set({
     image_format: 'jpeg',
     jpeg_quality: 90,
     constraints: {
-        width: { exact: 1280 },
-        height: { exact: 720 }
+        width: { exact: 640 },
+        height: { exact: 360 }
     }
 });
 
