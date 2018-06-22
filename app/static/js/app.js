@@ -57,7 +57,7 @@ function handleSuccess(stream) {
                 fd.append('data', blob);
                 $.ajax({
                     type: 'POST',
-                    url: 'http://canadiantired-207914.appspot.com/api/audio',
+                    url: 'https://canadiantired-207914.appspot.com/api/audio',
                     data: fd,
                     processData: false,
                     contentType: false
