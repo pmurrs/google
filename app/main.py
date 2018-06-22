@@ -4,14 +4,29 @@ from flask_cors import CORS, cross_origin
 from flask import Flask, redirect, url_for, request, render_template, jsonify
 from base64 import b64decode
 import requests
+from werkzeug.utils import secure_filename
+import os
+from os.path import join, dirname, realpath
+from google.cloud import storage
 
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+ALLOWED_EXTENSIONS = ['jpg','jpeg','png']
 
 #app = Flask(__name__, template_folder='templates')
 app = Flask(__name__)
 CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.route('/',methods = ['POST', 'GET'])
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+app.config['APPLICATION_ROOT'] = dirname(APP_ROOT)
+UPLOAD_FOLDER = APP_ROOT
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+@app.route('/old',methods = ['POST', 'GET'])
 @cross_origin()
 def hello():
     """Return a friendly HTTP greeting."""
@@ -47,12 +62,45 @@ def test():
 
 @app.route('/image')
 def _image(input_file, output_file):
+
+    client = storage.Client()
+    bucket = client.get_bucket('canadiantired')
+    blob = bucket.blob('donuts.png')
+    blob.upload_from_string('this is test content!')
    
-    with open(image_filename, 'rb') as image_file:
-            content_json_obj = {
-                'content': base64.b64encode(image_file.read()).decode('UTF-8')
-            }
-    return 'Hello World!'
+    # with open(image_filename, 'rb') as image_file:
+    #         content_json_obj = {
+    #             'content': base64.b64encode(image_file.read()).decode('UTF-8')
+    #        }
+
+    return 'Uploaded'
+
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect("/image", code=302)
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <p><input type=file name=file>
+         <input type=submit value=Upload>
+    </form>
+    '''
 
 
 @app.errorhandler(500)
