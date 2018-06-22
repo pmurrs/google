@@ -66,7 +66,7 @@ def _image(img):
     client = storage.Client()
     bucket = client.get_bucket('canadiantired')
     blob = bucket.blob(img)
-    blob.upload_from_string('this is test content!')
+    blob.upload_from_filename(img)
    
     # with open(image_filename, 'rb') as image_file:
     #         content_json_obj = {
@@ -91,7 +91,7 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect("/image/" + filename, code=302)
+            #return redirect("/image/" + filename, code=302)
     return '''
     <!doctype html>
     <title>Upload new File</title>
