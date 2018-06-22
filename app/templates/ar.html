@@ -1,0 +1,49 @@
+<!doctype html> 
+
+<head> 
+    <title>so canadian tired</title>
+    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script> 
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.5/aframe/build/aframe-ar.js"></script> 
+    <script src="https://rawgit.com/donmccurdy/aframe-extras/v2.1.1/dist/aframe-extras.loaders.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+        #arjsDebugUIContainer {
+            display: none;
+        }
+
+        section.main-controls {
+            position: absolute;
+            bottom: 0px;
+            z-index: 100000;
+            width: 100%;
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        ul#productdescription {
+            display: flex;
+        }
+    </style>
+</head> 
+<body style='margin : 0px; overflow: hidden;'> 
+    <section class="main-controls">
+        <div id="buttons">
+            <button class="record">Push to Talk</button>
+        </div>
+        <!-- <a id="downloadblob">Download the clip</a> -->
+        <ul id="productdescription"></ul>
+    </section>
+    <a-scene embedded arjs='sourceType: webcam;'> 
+    <!-- <a-box position='0 0.5 0' material='opacity: 0.5;'></a-box> -->
+    <a-assets> 
+        <a-asset-item id="myModelObj" src="../static/assets/chr_old.obj"></a-asset-item> 
+        <a-asset-item id="myModelMtl" src="../static/assets/chr_old.mtl"></a-asset-item> 
+    </a-assets> 
+    <a-entity scale=".1 .1 .1" rotation="270 0 0" position='0 0.5 -0.5' obj-model="obj: #myModelObj; mtl: #myModelMtl"></a-entity>
+    <a-marker-camera preset='kanji'></a-marker-camera>
+    </a-scene> 
+
+    <script type="text/javascript" src="../static/js/app.js"></script>
+</body>

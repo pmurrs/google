@@ -1,11 +1,9 @@
 # [START app]
-import logging
+import io, os, sys, wave, requests, json, logging
 from flask_cors import CORS, cross_origin
-from flask import Flask, redirect, url_for, request, render_template, jsonify
+from flask import Flask, redirect, url_for, request, render_template, jsonify, Response, send_file
 from base64 import b64decode
-import requests
 from werkzeug.utils import secure_filename
-import os
 from os.path import join, dirname, realpath
 from google.cloud import storage
 from google.cloud import datastore
@@ -165,6 +163,131 @@ def server_error(e):
     See logs for full stacktrace.
     """.format(e), 500
 
+@app.route('/ar')
+def route_ar():
+    return render_template('ar.html')
+
+@app.route('/api/audio', methods = ['POST', 'GET'])
+def post_audio():
+    if request.method == 'GET':
+        # =========================ElasticSearch API=========================
+        elasticHeaders = {'Content-Type': 'application/json', }
+        elastic = {
+                
+                "productid" : "bike4",
+                "eng_desc" : "how old is the Brooklyn Bridge",
+                "ratings" : "3"                
+        }
+        elasticData = json.dumps(elastic)
+
+        # data = open('request.json', 'rb').read() #json request file required
+        elasticResponse = requests.get('http://104.198.254.220:9200/_search?q=bike')
+        # a = json.loads(response.text)
+
+        return elasticResponse.text
+
+    if request.method == 'POST':
+         # get data using flask
+        blob = request.get_data()
+        # print (request.form['file'])
+        # print "======"
+        # print(request.data)
+
+        # Open file and write binary (blob) data
+        f = open('./audio.wav', 'w+')
+        f.write(request.data)
+        f.close()
+
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS']='credentials.json'
+        params = (('key', 'AIzaSyAxgxicufBuHtEMsqScWdu4Uaivs0Laox4'),)
+
+        # =========================Storage API=========================
+        # storage REST api
+        # storageAPI = 'https://www.googleapis.com/storage/v1/b/canadiantired/o/test.wav'
+        # storageResponse = requests.get(url=storageAPI, params=params)
+        # print storageResponse.text
+
+        # Instantiates a client
+        storage_client = storage.Client()
+
+        #This creates a new bucket
+        # # The name for the new bucket
+        bucket_name = 'canadiantired'
+
+        # # Creates the new bucket
+        # bucket = storage_client.create_bucket(bucket_name)
+
+        # print('Bucket {} created.'.format(bucket.name))
+
+        def upload_blob(bucket_name, source_file_name, destination_blob_name):
+            """Uploads a file to the bucket."""
+            storage_client = storage.Client()
+            bucket = storage_client.get_bucket(bucket_name)
+            blob = bucket.blob(destination_blob_name)
+
+            print('Blob {} is publicly accessible at {}'.format( 
+                blob.name, blob.public_url))
+
+            blob.upload_from_filename(source_file_name)
+            blob.make_public()
+
+            print('File {} uploaded to {}.'.format(
+                source_file_name,
+                destination_blob_name))
+
+        upload_blob(bucket_name, 'audio.wav', 'audio.wav')
+        
+
+        # =========================Speech Data API=========================
+        # Here down works
+        
+        speechHeaders = {'Content-Type': 'application/json'}
+        # speech = {
+        #     "config": {
+        #         "encoding":"LINEAR16",
+        #         "sample_rate": 16000,
+        #         "language_code": "en-US"
+        #     },
+        #     "audio": {
+        #         "uri":"gs://canadiantired/audio.wav"
+        #     }
+        # }
+
+        speech = {
+            "config": {
+                "encoding":"FLAC",
+                "sample_rate": 16000,
+                "language_code": "en-US"
+            },
+            "audio": {
+                "uri":"gs://cloud-samples-tests/speech/brooklyn.flac"
+            }
+        }
+        
+        speechData = json.dumps(speech)
+        speechAPI = 'https://speech.googleapis.com/v1beta1/speech:syncrecognize'
+
+        speechResponse = requests.post(url=speechAPI, data=speechData, params=params, headers=speechHeaders)
+        # print(speechResponse.status_code, speechResponse.reason, speechResponse.text)
+
+
+         # =========================ElasticSearch API=========================
+        elasticHeaders = {'Content-Type': 'application/json', }
+        elastic = {
+                
+                "productid" : "bike4",
+                "eng_desc" : "how old is the Brooklyn Bridge",
+                "ratings" : "3"
+                
+        }
+ 
+        elasticData = json.dumps(elastic)
+        # data = open('request.json', 'rb').read() #json request file required
+        elasticResponse = requests.get('http://104.198.254.220:9200/_search?q=bike')
+        # a = json.loads(response.text)
+ 
+        print (elasticResponse)
+        return elasticResponse.text
 
 if __name__ == '__main__':
     # This is used when running locally. Gunicorn is used to run the
