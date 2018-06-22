@@ -8,6 +8,9 @@ from werkzeug.utils import secure_filename
 import os
 from os.path import join, dirname, realpath
 from google.cloud import storage
+from google.cloud import datastore
+from google.cloud import vision
+import json
 
 
 def allowed_file(filename):
@@ -60,6 +63,7 @@ def test():
     
     return response
 
+#uploads file to bucket
 @app.route('/image/<img>')
 def _image(img):
 
@@ -73,8 +77,9 @@ def _image(img):
     #             'content': base64.b64encode(image_file.read()).decode('UTF-8')
     #        }
 
-    return 'Uploaded'
+    return redirect("/req/" + img, code=302)
 
+#uploads file to server and redirects to method which uploads to bucket
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -101,6 +106,46 @@ def upload_file():
          <input type=submit value=Upload>
     </form>
     '''
+
+@app.route('/req/<upfile>', methods=['GET', 'POST'])
+def api_request(upfile):
+
+    headers = {'Content-Type': 'application/json', }
+    params = (('key', 'AIzaSyAxgxicufBuHtEMsqScWdu4Uaivs0Laox4'),) #provide correct api key for our instance
+
+    data = {}
+    data['requests'] = {}
+    data['requests']['image'] = {}
+    data['requests']['image']['source'] = {}
+    data['requests']['image']['source']['gcsImageUri'] = 'gs://canadiantired/' + upfile
+    data['requests']['features'] = [{}]
+    data['requests']['features'][0]['type'] = 'TEXT_DETECTION'
+
+    print('before')
+    json_data = json.dumps(data)
+    print('after')
+
+    # data = open('request.json', 'rb').read() #json request file required
+    response = requests.post('https://vision.googleapis.com/v1/images:annotate', headers=headers, params=params, data=json_data)
+    a = json.loads(response.text)
+
+    b = a[u'responses'][0][u'textAnnotations']
+
+    c = ''
+
+    if b[0][u'description']:
+        c = b[0][u'description']
+        c = c.replace('\n',' ')
+    else:
+        c = 'not found'
+
+    if c != 'not found':
+        datastore_client = datastore.Client()
+
+        query = datastore_client.query(kind='Product')
+        image_entities = list(query.fetch())
+
+    return str(image_entities)
 
 
 @app.errorhandler(500)
